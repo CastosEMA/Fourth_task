@@ -66,19 +66,19 @@ rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
 
         app.get('/add-holiday', async (req, res) => {
             try {
-                const employeeId = parseInt(req.query.employeeId);
+                /*const employeeId = parseInt(req.query.employeeId);
                 const startDate = req.query.startDate;
                 const endDate = req.query.endDate;
 
                 const request = new holidayRequests(employeeId, startDate, endDate);
-                requests.push(request);
+                requests.push(request);*/
 
                 // Render HTML using EJS and transfer data
                 res.render('add-holiday', {
-                    employeeId: request.employeeId,
+                    /*employeeId: request.employeeId,
                     startDate: request.startDate,
                     endDate: request.endDate,
-                    status: request.status,
+                    status: request.status,*/
                 });
 
             } catch (e) {
