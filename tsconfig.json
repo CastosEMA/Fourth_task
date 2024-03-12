@@ -1,14 +1,13 @@
 {
-  "compilerOptions": {     
+  "compilerOptions": {
+    "target": "es6",
     "module": "es2020",
-    "target": "es5",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node"
 
-    "allowJs": true, 
-    "moduleResolution": "node",
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "allowImportingTsExtensions": true,
-    "allowSyntheticDefaultImports": true
   },
-  
+  "include": ["main.ts", "employees.ts", "holidayRequests.ts", "holidayRules.ts"]
 }

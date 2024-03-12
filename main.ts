@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
-import { Employee } from './employees.ts';
-import { holidayRequests } from './holidayRequests.ts';
-import { holidayRules } from './holidayRules.ts';
+import { Employee } from './employees.js';
+import { holidayRequests } from './holidayRequests.js';
+import { holidayRules } from './holidayRules.js';
 import { format,areIntervalsOverlapping , formatDistance, formatRelative, isValid, isWeekend, eachDayOfInterval, differenceInDays, subDays } from 'date-fns';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import path from 'path';
 import ejs from 'ejs';
 import { fileURLToPath } from 'url';
@@ -41,7 +41,7 @@ rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
 
     async function main(){
 
-        app.get('/employees', (req, res) => {
+        app.get('/employees', (req:Request, res:Response) => {
             try {
                 // Get the list of employees in JSON format
                 const employeesJson = JSON.stringify(employees);
@@ -52,7 +52,7 @@ rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
                 res.status(500).send('Internal Server Error');
             }
         });
-        app.get('/holidays', (req, res) => {
+        app.get('/holidays', (req:Request, res:Response) => {
             try {
                 // Get a list of vacation requests in JSON format
                 const requestsJson = JSON.stringify(requests);
@@ -64,7 +64,7 @@ rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
             }
         });
 
-        app.get('/add-holiday', async (req, res) => {
+        app.get('/add-holiday', async (req:Request, res:Response) => {
             try {
                 /*const employeeId = parseInt(req.query.employeeId);
                 const startDate = req.query.startDate;
