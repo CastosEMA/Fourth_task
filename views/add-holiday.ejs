@@ -2,14 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Holiday Request</title>
+    <title>Add Holiday Form</title>
 </head>
 <body>
-<h1>Add Holiday Request</h1>
-<p>Employee ID: <%= employeeId %></p>
-<p>Start Date: <%= startDate %></p>
-<p>End Date: <%= endDate %></p>
-<p>Status: <%= status %></p>
+<h1>Add Holiday Form</h1>
+
+<form action="/add-holiday" method="POST">
+    <label for="employeeId">Employee ID:</label>
+    <input type="number" id="employeeId" name="employeeId" required>
+
+    <br>
+
+    <label for="startDate">Start Date :</label>
+    <input type="text" id="startDate" name="startDate" placeholder="YYYY-MM-DD" required>
+
+    <br>
+
+    <label for="endDate">End Date :</label>
+    <input type="text" id="endDate" name="endDate" placeholder="YYYY-MM-DD" required>
+
+    <br>
+
+    <button type="submit">Submit</button>
+
+    <!--<script src = "scripts/script.js"></script>-->
+</form>
 </body>
 </html>

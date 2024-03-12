@@ -8,58 +8,61 @@ import path from 'path';
 import ejs from 'ejs';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-//const __dirname = decodeURI(new URL(".", import.meta.url).pathname)
-const app = express();
 
+const app = express();
 const port = 5002;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 const employees: Employee[] = [];
-
 employees.push({
-    id: 12,
-    name: "hello",
+    id: 1,
+    name: "Yura",
     remainingHolidays: 12,
 });
 
 const requests: holidayRequests[] = [];
-
 requests.push({
-    employeeId: 12,
+    employeeId: 1,
     startDate: "2024-04-01",
     endDate: "2024-04-15",
     status: "Pending"
 });
-function arrayToObject(arr) {
+/*function arrayToObject(arr) {
     return arr.reduce((acc, currentValue, index) => {
         acc[index] = currentValue;
         return acc;
     }, {});
-}
+}*/
+
 const rules: holidayRules[] = [];
 rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
 
     async function main(){
 
         app.get('/employees', (req, res) => {
+            try {
+                // Get the list of employees in JSON format
+                const employeesJson = JSON.stringify(employees);
 
-            res.send(arrayToObject(employees))
+                // Sending the list of employees to the page
+                res.render('employees', { employees: JSON.parse(employeesJson) });
+            } catch (e) {
+                res.status(500).send('Internal Server Error');
+            }
         });
         app.get('/holidays', (req, res) => {
-            res.send(arrayToObject(requests))
-        });
-        app.get("/server", (req, res) => {
-            res.header("Access-Control-Allow-Origin", "*");
-            const data = { message: "<p>hello</p>" };
-            res.json(data);
-        });
-        // Встановлюємо шаблонізатор EJS
-        app.set('view engine', 'ejs');
-        app.set('views', path.join(__dirname, 'views'));  // Створіть папку "views" та помістіть шаблони туди
+            try {
+                // Get a list of vacation requests in JSON format
+                const requestsJson = JSON.stringify(requests);
 
-        // ...
+                // Sending a list of leave requests to the page
+                res.render('holidays', { requests: JSON.parse(requestsJson) });
+            } catch (e) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
 
         app.get('/add-holiday', async (req, res) => {
             try {
@@ -70,109 +73,22 @@ rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
                 const request = new holidayRequests(employeeId, startDate, endDate);
                 requests.push(request);
 
-                // Рендеримо HTML за допомогою EJS та передаємо дані
+                // Render HTML using EJS and transfer data
                 res.render('add-holiday', {
                     employeeId: request.employeeId,
                     startDate: request.startDate,
                     endDate: request.endDate,
                     status: request.status,
                 });
+
             } catch (e) {
                 res.send(e);
             }
         });
 
-        // ...
-
-        /*app.get('/add-holiday', async (req, res) => {
-            try{
-                const employeeId = parseInt(req.query.employeeId);
-                const startDate = req.query.startDate;
-                const endDate = req.query.endDate;
-                console.log(`${employeeId} ${startDate} ${endDate}`);
-                const request = new holidayRequests(employeeId, startDate, endDate);
-                requests.push(request);
-                res.send('123');*/
-                /*const employee = employees.find((emp) => emp.id === employeeId);
-                console.log(employee);
-                console.log(employees);
-
-                const request = requests.find((request) => request.employeeId === employeeId);
-                if(employee.id === employeeId){
-                    request.status = status;
-                    res.send("GOOD")
-                }else{
-                    res.send("not found")
-                }
-                */
-            /*}
-            catch (e){
-                res.send(e)
-            }
-        });*/
-
-        app.get('/add-employee', (req, res) => {
-
-        });
-
-
-        // app.get('/smsng', (req, res) => {
-        //     console.log("good")
-        //     res.send('Response from /curl route');
-        // });
-
         app.listen(port, () => {
             console.log(`Сервер запущено на порті ${port}`);
         });
-    }
-
-
-
-
-// while (true) {
-        //     const action = await chooseAction();
-        //     switch (action) {
-        //         case 'Add a new employee':
-        //         await addEmployee();
-        //         break;
-        //         case 'View a list of employees with their remaining holidays':
-        //         viewEmployees();
-        //         break;
-        //         case 'Submit a holiday request':
-        //         await submitHolidayRequest();
-        //         break;
-        //         case 'View a list of pending holiday requests':
-        //         viewPendingHolidayRequests();
-        //         break;
-        //         case 'Approve or reject a pending holiday request':
-        //         await approveRejectHolidayRequest();
-        //         break;
-        //         case 'Exit':
-        //         console.log('Goodbye!');
-        //         return;
-        //     }
-        // }
-
-    async function chooseAction(): Promise<string> {
-        const choices = [
-        'Add a new employee',
-        'View a list of employees with their remaining holidays',
-        'Submit a holiday request',
-        'View a list of pending holiday requests',
-        'Approve or reject a pending holiday request',
-        'Exit',
-        ];
-    
-        const { action } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'action',
-            message: 'Choose an action:',
-            choices,
-        },
-        ]);
-    
-        return action;
     }
 
     //add a new Employee

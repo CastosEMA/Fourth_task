@@ -1,5 +1,4 @@
 import axios, {Axios} from 'axios';
-import {config} from "date-fns/docs/config";
 
 
 
@@ -25,7 +24,7 @@ async  function addHoliday(employeeId, startDate, endDate){
             "endDate":endDate,
         }
         const response = await axios.post(
-            'http://localhost:5002/views/add-holiday', {params});
+            'http://localhost:5002/add-holiday', {params});
         return response.data;
 
     } catch (error){
@@ -44,7 +43,7 @@ async function employees() {
     }
 }
 
-async function holidays() {
+/*async function holidays() {
     try {
         const response = await axios.get('http://localhost:5002/holidays');
         // console.log(response.data)
@@ -53,7 +52,7 @@ async function holidays() {
         console.error('Error:', error);
         return null;
     }
-}
+}*/
 
 // holidays().then(response => {
 //     if (response) {
@@ -70,13 +69,13 @@ async function holidays() {
 //     .catch(error => {
 //         console.error(error);
 //     });
-holidays().then(response => {
+/*holidays().then(response => {
     if (response) {
         console.log(response.data);
     } else {
         console.log('Failed to fetch data');
     }
-});
+});*/
 
 export{
     addHoliday,
