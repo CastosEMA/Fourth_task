@@ -10,14 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import inquirer from 'inquirer';
 import { Employee } from './employees.js';
 import { holidayRequests } from './holidayRequests.js';
-import { holidayRules } from './holidayRules.js';
 import { areIntervalsOverlapping, differenceInDays } from 'date-fns';
 import express from 'express';
 import path from 'path';
+// import ejs from 'ejs';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = 5002;
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server started at ${port} port`);
+});
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 const employees = [];
@@ -31,7 +34,7 @@ requests.push({
     employeeId: 1,
     startDate: "2024-04-01",
     endDate: "2024-04-15",
-    status: "Pending"
+    status: "Pending",
 });
 /*function arrayToObject(arr) {
     return arr.reduce((acc, currentValue, index) => {
@@ -40,13 +43,21 @@ requests.push({
     }, {});
 }*/
 const rules = [];
-rules.push(new holidayRules(14, "2024-03-16", "2024-03-18"));
+rules.push({
+    maxConsecutiveDays: 14,
+    blackoutStartDate: "2024-03-16",
+    blackoutEndDate: "2024-03-18",
+});
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
+        // app.get("/ggg",(req:Request,res:Response)=>{
+        //    res.send("sukas")
+        // });
         app.get('/employees', (req, res) => {
             try {
                 // Get the list of employees in JSON format
                 const employeesJson = JSON.stringify(employees);
+                console.log(req);
                 // Sending the list of employees to the page
                 res.render('employees', { employees: JSON.parse(employeesJson) });
             }
@@ -65,28 +76,28 @@ function main() {
                 res.status(500).send('Internal Server Error');
             }
         });
-        app.get('/add-holiday', (req, res) => __awaiter(this, void 0, void 0, function* () {
+        app.get('/add-holiday', (req, res) => {
             try {
-                /*const employeeId = parseInt(req.query.employeeId);
-                const startDate = req.query.startDate;
-                const endDate = req.query.endDate;
-
+                console.log(req.query.employeeId);
+                const employeeId = parseInt(req.query.employeeId); // Явне приведення до string та parseInt
+                const startDate = req.query.startDate; // Явне приведення до string
+                const endDate = req.query.endDate; // Явне приведення до string
+                console.log(employeeId);
+                console.log(startDate);
+                console.log(endDate);
                 const request = new holidayRequests(employeeId, startDate, endDate);
-                requests.push(request);*/
+                requests.push(request);
                 // Render HTML using EJS and transfer data
                 res.render('add-holiday', {
-                /*employeeId: request.employeeId,
-                startDate: request.startDate,
-                endDate: request.endDate,
-                status: request.status,*/
+                    employeeId: request.employeeId,
+                    startDate: request.startDate,
+                    endDate: request.endDate,
+                    status: request.status,
                 });
             }
             catch (e) {
                 res.send(e);
             }
-        }));
-        app.listen(port, () => {
-            console.log(`Сервер запущено на порті ${port}`);
         });
     });
 }
