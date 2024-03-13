@@ -11,7 +11,14 @@
 
 <ul>
     <% requests.forEach(request => { %>
-        <li><%= `${request.employeeId}: Start date ${request.startDate} to End date ${request.endDate} - ${request.status}` %></li>
+        <li>
+            <%= `${request.employeeId}: Start date ${request.startDate} to End date ${request.endDate} - ${request.status}` %>
+            <form action="/approve-reject-holiday" method="post">
+                <input type="hidden" name="requestId" value="<%= request.employeeId %>">
+                <button type="submit" name="action" value="approve">Approve</button>
+                <button type="submit" name="action" value="reject">Reject</button>
+            </form>
+        </li>
     <% }); %>
 </ul>
 </body>

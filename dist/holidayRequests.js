@@ -1,4 +1,4 @@
-class holidayRequests {
+class HolidayRequests {
     constructor(emploeeId, startDate, endDate, status = "Pending") {
         this.employeeId = emploeeId;
         this.startDate = startDate;
@@ -6,5 +6,5 @@ class holidayRequests {
         this.status = status;
     }
 }
-export { holidayRequests, };
+export { HolidayRequests, };
 //const request = new holidayRequests(1, "2024-04-01", "2024-04-15", "Pending");

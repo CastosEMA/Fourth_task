@@ -7,7 +7,7 @@ interface holidayRequestsData {
     status: requestStatus;
 }
 
-class holidayRequests implements holidayRequestsData{
+class HolidayRequests implements holidayRequestsData{
     employeeId: number; // assign an id of emploee
     startDate: string;
     endDate: string;
@@ -22,7 +22,7 @@ class holidayRequests implements holidayRequestsData{
 }
 
 export {
-    holidayRequests,
+    HolidayRequests,
 }
 
 //const request = new holidayRequests(1, "2024-04-01", "2024-04-15", "Pending");

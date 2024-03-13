@@ -1,15 +1,16 @@
+
 interface holidayRulesData {
     maxConsecutiveDays: number;
     blackoutStartDate: string;
     blackoutEndDate: string;
 }
 
-class holidayRules implements holidayRulesData{
+class HolidayRules implements holidayRulesData{
     maxConsecutiveDays: number;
     blackoutStartDate: string;
     blackoutEndDate: string;
 
-    constructor(maxConsecutiveDays: number, blackoutStartDate: string, blackoutEndDate: string){
+    constructor(blackoutStartDate: string, blackoutEndDate: string,maxConsecutiveDays: number = 14){
         this.maxConsecutiveDays = maxConsecutiveDays;
         this.blackoutStartDate = blackoutStartDate;
         this.blackoutEndDate = blackoutEndDate;
@@ -17,6 +18,6 @@ class holidayRules implements holidayRulesData{
 }
 
 export{
-    holidayRules,
+    HolidayRules,
 }
 
