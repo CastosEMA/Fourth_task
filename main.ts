@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 import { Employee } from './employees.js';
-import { HolidayRequests } from './holidayRequests.js';
+import { HolidayRequests, statusPending, statusApproved, statusRejected } from './holidayRequests.js';
 import { HolidayRules } from './holidayRules.js';
 import { format,areIntervalsOverlapping , formatDistance, formatRelative, isValid, isWeekend, eachDayOfInterval, differenceInDays, subDays } from 'date-fns';
 import express, { Request, Response } from 'express';
@@ -43,21 +43,14 @@ requests.push({
     employeeId: 1,
     startDate: "2024-04-01",
     endDate: "2024-04-15",
-    status: "Pending",
+    status: statusPending,
 });
-/*function arrayToObject(arr) {
-    return arr.reduce((acc, currentValue, index) => {
-        acc[index] = currentValue;
-        return acc;
-    }, {});
-}*/
 
 const rules: HolidayRules[] = [];
 const rule = new HolidayRules("2024-03-16", "2024-03-18");
 rules.push(rule);
 
 async function main(){
-
     app.get('/employees', (req, res) => {
         try {
             const employeesJson = JSON.stringify(employees);
@@ -69,12 +62,11 @@ async function main(){
     });
     app.get('/holidays', (req, res) => {
         try {
-            res.render('holidays', { requests });
+            res.render('holidays',  {requests});
         } catch (e) {
             res.status(500).send('Internal Server Error');
         }
     });
-
     app.post('/approve-reject-holiday', (req, res) => {
         try {
             const requestId = parseInt(req.body.requestId);
@@ -83,9 +75,9 @@ async function main(){
             const request = requests.find((r) => r.employeeId === requestId);
             if (request) {
                 if (action === 'approve') {
-                    request.status = 'Approved';
+                    request.status = statusApproved;
                 } else if (action === 'reject') {
-                    request.status = 'Rejected';
+                    request.status = statusRejected;
                 }
                 res.redirect('/holidays');
             } else {
@@ -101,8 +93,6 @@ async function main(){
             const employeeId = parseInt(req.body.employeeId as string);
             const startDate = req.body.startDate as string;
             const endDate = req.body.endDate as string;
-            console.log(startDate);
-            console.log(endDate);
 
             const periodOfVacation = differenceInDays(endDate,startDate);
             const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({start:rules[0].blackoutStartDate,end:rules[0].blackoutEndDate},{start:startDate,end:endDate});
@@ -150,8 +140,7 @@ async function main(){
 
 }
 
-//add a new Employee
-async function addEmployee() {
+/*async function addEmployee() {
     const { id, name, remainingHolidays } = await inquirer.prompt([
         {
             type: 'input',
@@ -222,7 +211,7 @@ async function submitHolidayRequest() {
     )
 
     // Check Max Consecutive days function
-    if (daysRequested > rules[0].maxConsecutiveDays /*|| daysRequested > employees[employeeId].remainingHolidays*/) {
+    if (daysRequested > rules[0].maxConsecutiveDays //|| daysRequested > employees[employeeId].remainingHolidays) {
         console.log(`Request exceeds the maximum consecutive holiday limit of ${rules[0].maxConsecutiveDays} days.`);
         return;
     }
@@ -291,6 +280,6 @@ async function approveRejectHolidayRequest() {
     }
 
 }
-
+*/
 
 main();

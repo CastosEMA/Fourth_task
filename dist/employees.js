@@ -6,4 +6,3 @@ class Employee {
     }
 }
 export { Employee, };
-const Ania = new Employee(1, "Anna", 5);

@@ -1,19 +1,23 @@
 type requestStatus = "Pending" | "Approved" | "Rejected";
+const statusPending:requestStatus = "Pending";
+const statusApproved:requestStatus = "Approved";
+const statusRejected:requestStatus = "Rejected";
+
 
 interface holidayRequestsData {
-    employeeId: number; // assign an id of emploee
+    employeeId: number;
     startDate: string;
     endDate: string;
     status: requestStatus;
 }
 
 class HolidayRequests implements holidayRequestsData{
-    employeeId: number; // assign an id of emploee
+    employeeId: number;
     startDate: string;
     endDate: string;
-    status: requestStatus; //set a "pending" status as default
+    status: requestStatus;
 
-    constructor(emploeeId: number, startDate: string, endDate: string, status: requestStatus = "Pending"){
+    constructor(emploeeId: number, startDate: string, endDate: string, status: requestStatus = statusPending){
         this.employeeId = emploeeId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -23,6 +27,8 @@ class HolidayRequests implements holidayRequestsData{
 
 export {
     HolidayRequests,
+    statusPending,
+    statusApproved,
+    statusRejected,
 }
 
-//const request = new holidayRequests(1, "2024-04-01", "2024-04-15", "Pending");
