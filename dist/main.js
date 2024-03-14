@@ -1,15 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { HolidayRequests, statusPending, statusApproved, statusRejected } from './holidayRequests.js';
 import { HolidayRules } from './holidayRules.js';
-import { areIntervalsOverlapping, differenceInDays } from 'date-fns';
+import { format, areIntervalsOverlapping, isValid, differenceInDays } from 'date-fns';
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
@@ -49,100 +40,166 @@ requests.push({
 const rules = [];
 const rule = new HolidayRules("2024-03-16", "2024-03-18");
 rules.push(rule);
+// function arrayToObject(arr:[]) {
+//     return arr.reduce((acc, currentValue, index) => {
+//         acc[index] = currentValue;
+//         return acc;
+//     }, {});
+// }
 function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        app.get('/employees', (req, res) => {
-            try {
-                const employeesJson = JSON.stringify(employees);
-                console.log(req);
-                res.render('employees', { employees: JSON.parse(employeesJson) });
-            }
-            catch (e) {
-                res.status(500).send('Internal Server Error');
-            }
-        });
-        app.get('/holidays', (req, res) => {
-            try {
-                res.render('holidays', { requests });
-            }
-            catch (e) {
-                res.status(500).send('Internal Server Error');
-            }
-        });
-        app.post('/approve-reject-holiday', (req, res) => {
-            try {
-                const requestId = parseInt(req.body.requestId);
-                const action = req.body.action;
-                const request = requests.find((r) => r.employeeId === requestId);
-                if (request) {
-                    if (action === 'approve') {
-                        request.status = statusApproved;
-                    }
-                    else if (action === 'reject') {
-                        request.status = statusRejected;
-                    }
-                    res.redirect('/holidays');
-                }
-                else {
-                    res.status(404).send('Request not found');
-                }
-            }
-            catch (error) {
-                console.error(error);
-                res.status(500).send('Internal Server Error');
-            }
-        });
-        app.post("/add-holiday", (req, res) => {
-            try {
-                const employeeId = parseInt(req.body.employeeId);
-                const startDate = req.body.startDate;
-                const endDate = req.body.endDate;
-                const periodOfVacation = differenceInDays(endDate, startDate);
-                const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({ start: rules[0].blackoutStartDate, end: rules[0].blackoutEndDate }, { start: startDate, end: endDate });
-                const employee = employees.find((emp) => emp.id === employeeId);
-                if (periodOfVacation > 0 && differenceInDays(startDate, Date()) > 0) {
-                    if (employee) {
-                        if (employee.remainingHolidays >= periodOfVacation) {
-                            if (isHolidayOvarlappingWithBlackoutPeriod) {
-                                if (periodOfVacation <= rules[0].maxConsecutiveDays) {
-                                    requests.push(new HolidayRequests(employeeId, startDate, endDate));
-                                    res.redirect('/add-holiday');
-                                }
-                                else {
-                                    console.log("You chose too much days for your holiday!!!");
-                                }
+    //let updateResponse: object;
+    function checkDates(employeeId, startDate, endDate) {
+        try {
+            const periodOfVacation = differenceInDays(endDate, startDate);
+            const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({ start: rules[0].blackoutStartDate, end: rules[0].blackoutEndDate }, { start: startDate, end: endDate });
+            const employee = employees.find((emp) => emp.id === employeeId);
+            console.log(startDate);
+            if (periodOfVacation > 0 && differenceInDays(startDate, Date()) > 0) {
+                if (employee) {
+                    if (employee.remainingHolidays >= periodOfVacation) {
+                        if (isHolidayOvarlappingWithBlackoutPeriod) {
+                            if (periodOfVacation <= rules[0].maxConsecutiveDays) {
+                                return true;
                             }
                             else {
-                                console.log("There is a Blackout Period in the dates you chose!!!");
+                                console.log("You chose too much days for your holiday!!!");
+                                return false;
                             }
                         }
                         else {
-                            console.log("You chose too much days for your holiday!!!");
+                            console.log("There is a Blackout Period in the dates you chose!!!");
+                            return false;
                         }
                     }
                     else {
-                        console.log("There is no employee with such id, please enter the correct eployee id!!!");
+                        console.log("You chose too much days for your holiday!!!");
+                        return false;
                     }
                 }
                 else {
-                    console.log("You chose the wrong period of holiday!!!");
+                    console.log("There is no employee with such id, please enter the correct eployee id!!!");
+                    return false;
                 }
             }
-            catch (error) {
-                console.log("The date was entered incorrectly");
-                res.status(500).send(error);
+            else {
+                console.log("You chose the wrong period of holiday!!!");
+                return false;
             }
-        });
-        // Get the form page to add a new holiday request
-        app.get('/add-holiday', (req, res) => {
-            try {
-                // Відображення HTML-сторінки форми
-                res.render('add-holiday');
+        }
+        catch (error) {
+            console.log("The date was entered incorrectly");
+            return false;
+            // res.status(500).send(error);
+        }
+    }
+    function updateRequest(id, startDate, endDate) {
+        console.log(startDate + " " + endDate);
+        console.log(id);
+        console.log(typeof id);
+        console.log(requests[id]);
+        // Перетворюємо рядки з датами у об'єкти Date
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(endDate);
+        console.log(startDateObj);
+        console.log(endDateObj);
+        // Перевіряємо, чи є обидві дати дійсними
+        if (isValid(startDateObj) && isValid(endDateObj) && requests[id] !== undefined) {
+            const formattedsStartDate = format(startDateObj, 'yyyy-MM-dd');
+            const formattedsEndDate = format(endDateObj, 'yyyy-MM-dd');
+            requests[id].startDate = formattedsStartDate;
+            requests[id].endDate = formattedsEndDate;
+            requests[id].status = statusPending;
+            console.log(startDateObj + " " + endDateObj);
+            console.log("Перемога");
+            console.log(requests[id]);
+            return requests[id];
+        }
+    }
+    app.post('/update-request', (req, res) => {
+        console.log(req.body);
+        const startDate = req.body.startDate;
+        const endDate = req.body.endDate;
+        const id = Number(req.body.idOfRequest); //Витягнути requestId з вибраного реквеста
+        console.log(id);
+        //const updatingRequest = requests.find((r) => r.employeeId === id);
+        updateRequest(id, startDate, endDate);
+    });
+    app.get('/update-request', (req, res) => {
+        try {
+            const idOfRequest = Number(req.query.requestId);
+            console.log(idOfRequest);
+            res.render('update-request', { idOfRequest: idOfRequest });
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
+    });
+    app.get('/employees', (req, res) => {
+        try {
+            const employeesJson = JSON.stringify(employees);
+            console.log(req);
+            res.render('employees', { employees: JSON.parse(employeesJson) });
+        }
+        catch (e) {
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    app.get('/holidays', (req, res) => {
+        try {
+            res.render('holidays', { requests });
+        }
+        catch (e) {
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    app.post('/approve-reject-holiday', (req, res) => {
+        try {
+            const idOfEmployee = parseInt(req.body.idOfEmployee);
+            const action = req.body.action;
+            const requestId = parseInt(req.body.requestId);
+            console.log(requestId);
+            const request = requests.find((r) => r.employeeId === idOfEmployee);
+            if (request) {
+                if (action === 'approve') {
+                    request.status = statusApproved;
+                }
+                else if (action === 'reject') {
+                    request.status = statusRejected;
+                }
+                else if (action === 'update') {
+                    res.redirect(`/update-request?requestId=${requestId}`);
+                }
+                res.redirect('/holidays');
             }
-            catch (error) {
-                res.status(500).send(error);
+            else {
+                res.status(404).send('Request not found');
             }
-        });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    app.post("/add-holiday", (req, res) => {
+        const employeeId = parseInt(req.body.employeeId);
+        const startDate = req.body.startDate;
+        const endDate = req.body.endDate;
+        if (checkDates(employeeId, startDate, endDate) == true) {
+            requests.push(new HolidayRequests(employeeId, startDate, endDate));
+            res.redirect('/add-holiday');
+        }
+        else {
+            res.redirect('/add-holiday');
+        }
+    });
+    // Get the form page to add a new holiday request
+    app.get('/add-holiday', (req, res) => {
+        try {
+            res.render('add-holiday');
+        }
+        catch (error) {
+            res.status(500).send(error);
+        }
     });
 }
 /*async function addEmployee() {
