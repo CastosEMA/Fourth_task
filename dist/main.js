@@ -37,6 +37,7 @@ requests.push({
     endDate: "2024-04-15",
     status: statusPending,
 });
+const approvedRequests = [];
 const rules = [];
 const rule = new HolidayRules("2024-03-16", "2024-03-18");
 rules.push(rule);
@@ -53,9 +54,9 @@ function main() {
             const periodOfVacation = differenceInDays(endDate, startDate);
             const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({ start: rules[0].blackoutStartDate, end: rules[0].blackoutEndDate }, { start: startDate, end: endDate });
             const employee = employees.find((emp) => emp.id === employeeId);
-            console.log(startDate);
             if (periodOfVacation > 0 && differenceInDays(startDate, Date()) > 0) {
                 if (employee) {
+                    // @ts-ignore
                     if (employee.remainingHolidays >= periodOfVacation) {
                         if (isHolidayOvarlappingWithBlackoutPeriod) {
                             if (periodOfVacation <= rules[0].maxConsecutiveDays) {
@@ -89,7 +90,6 @@ function main() {
         catch (error) {
             console.log("The date was entered incorrectly");
             return false;
-            // res.status(500).send(error);
         }
     }
     function updateRequest(id, startDate, endDate) {
@@ -97,37 +97,34 @@ function main() {
         console.log(id);
         console.log(typeof id);
         console.log(requests[id]);
-        // Перетворюємо рядки з датами у об'єкти Date
         const startDateObj = new Date(startDate);
         const endDateObj = new Date(endDate);
         console.log(startDateObj);
         console.log(endDateObj);
-        // Перевіряємо, чи є обидві дати дійсними
         if (isValid(startDateObj) && isValid(endDateObj) && requests[id] !== undefined) {
             const formattedsStartDate = format(startDateObj, 'yyyy-MM-dd');
             const formattedsEndDate = format(endDateObj, 'yyyy-MM-dd');
-            requests[id].startDate = formattedsStartDate;
-            requests[id].endDate = formattedsEndDate;
-            requests[id].status = statusPending;
-            console.log(startDateObj + " " + endDateObj);
-            console.log("Перемога");
-            console.log(requests[id]);
-            return requests[id];
+            if (checkDates(requests[id].employeeId, formattedsStartDate, formattedsEndDate)) {
+                requests[id].startDate = formattedsStartDate;
+                requests[id].endDate = formattedsEndDate;
+                requests[id].status = statusPending;
+                console.log(startDateObj + " " + endDateObj);
+                console.log("Перемога");
+                console.log(requests[id]);
+                return requests[id];
+            }
         }
     }
     app.post('/update-request', (req, res) => {
         console.log(req.body);
         const startDate = req.body.startDate;
         const endDate = req.body.endDate;
-        const id = Number(req.body.idOfRequest); //Витягнути requestId з вибраного реквеста
-        console.log(id);
-        //const updatingRequest = requests.find((r) => r.employeeId === id);
+        const id = Number(req.body.idOfRequest);
         updateRequest(id, startDate, endDate);
     });
     app.get('/update-request', (req, res) => {
         try {
             const idOfRequest = Number(req.query.requestId);
-            console.log(idOfRequest);
             res.render('update-request', { idOfRequest: idOfRequest });
         }
         catch (error) {
@@ -146,7 +143,7 @@ function main() {
     });
     app.get('/holidays', (req, res) => {
         try {
-            res.render('holidays', { requests });
+            res.render('holidays', { requests, approvedRequests });
         }
         catch (e) {
             res.status(500).send('Internal Server Error');
@@ -162,6 +159,12 @@ function main() {
             if (request) {
                 if (action === 'approve') {
                     request.status = statusApproved;
+                    const holidayLength = differenceInDays(request.endDate, request.startDate);
+                    console.log(holidayLength);
+                    employees[idOfEmployee].remainingHolidays = employees[idOfEmployee].remainingHolidays - holidayLength;
+                    console.log(employees[idOfEmployee]);
+                    approvedRequests.push(request);
+                    requests.splice(requestId, 1);
                 }
                 else if (action === 'reject') {
                     request.status = statusRejected;

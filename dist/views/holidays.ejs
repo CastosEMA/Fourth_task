@@ -22,6 +22,11 @@
             </form>
         </li>
     <% }); %>
+    <% approvedRequests.forEach(approvedRequest => { %>
+        <li>
+            <%= `${approvedRequest.employeeId}: Start date ${approvedRequest.startDate} to End date ${approvedRequest.endDate} - ${approvedRequest.status}` %>
+        </li>
+    <% }); %>
 </ul>
 
 </body>
