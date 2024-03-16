@@ -57,6 +57,7 @@ const rules = [];
 const rule = new HolidayRules("2024-03-16", "2024-03-18");
 rules.push(rule);
 let successMessage;
+let failMessage;
 // function arrayToObject(arr:[]) {
 //     return arr.reduce((acc, currentValue, index) => {
 //         acc[index] = currentValue;
@@ -64,27 +65,28 @@ let successMessage;
 //     }, {});
 // }
 function main() {
-    // Функція для виконання GET-запиту та повернення результату
     function fetchHolidays(year, countryCode) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Виконання GET-запиту за допомогою Axios
                 const response = yield axios.get(`https://date.nager.at/api/v3/publicholidays/${year}/${countryCode}`);
-                // Повернення списку свят
                 return response.data;
             }
             catch (error) {
-                // Обробка помилок та повернення порожнього масиву у випадку помилки
-                console.error('Виникла помилка при виконанні запиту:', error);
+                console.error('An error occurred while executing the request:', error);
                 return [];
             }
         });
     }
-    //
-    // Виклик функції для виконання запиту для України у 2024 році
-    const holidaysPromise = fetchHolidays(2024, 'UA');
-    holidaysPromise.then((holidays) => {
-        // console.log('Список свят:', holidays);
+    //const holidaysPromise: Promise<Holiday[]> = fetchHolidays(2024, 'UA');
+    const holidays = [];
+    let relevantHolidays = [];
+    fetchHolidays(2024, 'UA')
+        .then((holidaysData) => {
+        holidays.push(...holidaysData);
+        console.log('Public Holidays List:', holidays);
+    })
+        .catch((error) => {
+        console.error('An error occurred while receiving holidays:', error);
     });
     function checkDates(employeeId, startDate, endDate) {
         try {
@@ -203,7 +205,22 @@ function main() {
     });
     app.get('/holidays', (req, res) => {
         try {
-            res.render('holidays', { requests, approvedOrRejectedRequests, successMessage });
+            relevantHolidays = [];
+            const dates = requests.map(request => {
+                return {
+                    startDate: request.startDate,
+                    endDate: request.endDate
+                };
+            });
+            holidays.forEach(holiday => {
+                dates.forEach(date => {
+                    if (areIntervalsOverlapping({ start: new Date(holiday.date), end: new Date(holiday.date) }, { start: new Date(date.startDate), end: new Date(date.endDate) })) {
+                        relevantHolidays.push(holiday);
+                    }
+                });
+            });
+            console.log("Relevant Holidays:", relevantHolidays);
+            res.render('holidays', { requests, approvedOrRejectedRequests, successMessage, relevantHolidays });
         }
         catch (e) {
             res.status(500).send('Internal Server Error');
@@ -259,7 +276,7 @@ function main() {
     });
     app.get('/add-holiday', (req, res) => {
         try {
-            res.render('add-holiday');
+            res.render('add-holiday', { failMessage, holidays });
         }
         catch (error) {
             res.status(500).send(error);

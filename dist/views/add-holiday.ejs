@@ -29,8 +29,26 @@
 
     <button type="submit">Submit</button>
 </form>
+<h2>Holidays List</h2>
+<ul>
+    <% holidays.forEach(holiday => { %>
+        <li><%= holiday.localName %> - <%= holiday.date %></li>
+    <% }); %>
+</ul>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+<script>
+    window.onload = function() {
+        const failMessage = '<%= failMessage %>';
+        if (failMessage) {
+            Swal.fire({
+                icon: 'error',
+                title: failMessage,
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
+    };
+</script>
 </body>
 </html>

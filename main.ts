@@ -57,6 +57,7 @@ const rules: HolidayRules[] = [];
 const rule = new HolidayRules("2024-03-16", "2024-03-18");
 rules.push(rule);
 let successMessage:string;
+let failMessage:string;
 // function arrayToObject(arr:[]) {
 //     return arr.reduce((acc, currentValue, index) => {
 //         acc[index] = currentValue;
@@ -65,7 +66,6 @@ let successMessage:string;
 // }
 function main(){
 
-// Оголошення типу даних для відповіді сервера
     interface Holiday {
         date: string;
         localName: string;
@@ -73,27 +73,27 @@ function main(){
         countryCode: string;
     }
 
-// Функція для виконання GET-запиту та повернення результату
     async function fetchHolidays(year: number, countryCode: string): Promise<Holiday[]> {
         try {
-            // Виконання GET-запиту за допомогою Axios
             const response: AxiosResponse<Holiday[]> = await axios.get<Holiday[]>(`https://date.nager.at/api/v3/publicholidays/${year}/${countryCode}`);
-
-            // Повернення списку свят
             return response.data;
         } catch (error) {
-            // Обробка помилок та повернення порожнього масиву у випадку помилки
-            console.error('Виникла помилка при виконанні запиту:', error);
+            console.error('An error occurred while executing the request:', error);
             return [];
         }
     }
-    const holidaysPromise: Promise<Holiday[]> = fetchHolidays(2024, 'UA');
+    //const holidaysPromise: Promise<Holiday[]> = fetchHolidays(2024, 'UA');
 
-    holidaysPromise.then((holidays: Holiday[]) => {
-        console.log('Список свят:', holidays);
-    }).catch((error) => {
-        console.error('Виникла помилка при отриманні свят:', error);
-    });
+    const holidays: Holiday[] = [];
+    let relevantHolidays: Holiday[] = [];
+    fetchHolidays(2024, 'UA')
+        .then((holidaysData: Holiday[]) => {
+            holidays.push(...holidaysData);
+            console.log('Public Holidays List:', holidays);
+        })
+        .catch((error) => {
+            console.error('An error occurred while receiving holidays:', error);
+        });
 
 
     function checkDates(employeeId:number,startDate:string,endDate:string,){
@@ -222,7 +222,26 @@ function main(){
 
     app.get('/holidays', (req, res) => {
         try {
-            res.render('holidays',  {requests, approvedOrRejectedRequests, successMessage});
+            relevantHolidays = [];
+            const dates = requests.map(request => {
+                return {
+                    startDate: request.startDate,
+                    endDate: request.endDate
+                };
+            });
+
+            holidays.forEach(holiday => {
+                dates.forEach(date => {
+                    if (areIntervalsOverlapping(
+                        {start: new Date(holiday.date), end: new Date(holiday.date)},
+                        {start: new Date(date.startDate), end: new Date(date.endDate)}
+                    )) {
+                        relevantHolidays.push(holiday);
+                    }
+                });
+            });
+            console.log("Relevant Holidays:", relevantHolidays);
+            res.render('holidays',  {requests, approvedOrRejectedRequests, successMessage, relevantHolidays});
         } catch (e) {
             res.status(500).send('Internal Server Error');
         }
@@ -277,7 +296,7 @@ function main(){
 
     app.get('/add-holiday', (req, res) => {
         try {
-            res.render('add-holiday');
+            res.render('add-holiday', {failMessage, holidays});
         } catch (error) {
             res.status(500).send(error);
         }

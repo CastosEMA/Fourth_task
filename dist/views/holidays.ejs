@@ -34,6 +34,13 @@
     <% }); %>
 </ul>
 
+<h2>Relevant Public Holidays List</h2>
+<ul>
+    <% relevantHolidays.forEach(holiday => { %>
+        <li><%= holiday.localName %> - <%= holiday.date %></li>
+    <% }); %>
+</ul>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
@@ -57,26 +64,26 @@
             icon: 'warning',
             showDenyButton: true,
             confirmButtonText: 'Yes, delete it!',
-        }).then((result) => {console.log(result.isConfirmed);
-                if (result.isConfirmed) {
+        }).then((result) => {
+            if (result.isConfirmed) {
 
-                    axios.delete(`/delete-request?result=true&requestId=${requestId}`)
-                        .then(response => {
-                            console.log('Успішно видалено', response);
-                            window.location.reload();
-                        })
-                        .catch(error => {
-                            console.error('Сталася помилка при видаленні', error);
-                            window.location.reload();
-                        });
+                axios.delete(`/delete-request?result=true&requestId=${requestId}`)
+                    .then(response => {
+                        console.log('Deleted successfully', response);
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('An error occurred while deleting', error);
+                        window.location.reload();
+                    });
 
-                } else if (result.isDenied) {
-                    Swal.fire(
-                        'Cancelled',
-                        'Deletion of the holiday request has been cancelled :)',
-                        'error'
-                    );
-                }
+            } else if (result.isDenied) {
+                Swal.fire(
+                    'Cancelled',
+                    'Deletion of the holiday request has been cancelled :)',
+                    'error'
+                );
+            }
             cancelButtonColor: '#d33'
         });
     }

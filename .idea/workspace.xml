@@ -5,25 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5b06e798-7739-4958-83b3-b5a639d89e62" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Second Task.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/employees.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/employees.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/holidayRequests.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/holidayRequests.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/holidayRules.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/holidayRules.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/dist/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/views/holidays.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/dist/views/holidays.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/views/update-request.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/dist/views/update-request.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/debug.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/debug.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/http.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/http.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/https.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/https.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/follow-redirects/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/follow-redirects/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
     </list>
     <list id="ab420765-7612-4824-b4c8-bcdce0bb528c" name="Changes by tsymb" comment="">
+      <change beforePath="$PROJECT_DIR$/dist/views/add-holiday.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/dist/views/add-holiday.ejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/views/holidays.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/dist/views/holidays.ejs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/main.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,70 +24,31 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/main.ts">
-      <ranges>
-        <range start1="5" end1="6" start2="5" end2="6" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="8" end1="8" start2="8" end2="9" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="10" end1="10" start2="11" end2="12" changelist="ab420765-7612-4824-b4c8-bcdce0bb528c" />
-        <range start1="11" end1="12" start2="13" end2="13" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="27" end1="28" start2="28" end2="29" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="37" end1="38" start2="38" end2="44" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="47" end1="48" start2="53" end2="54" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="52" end1="53" start2="58" end2="59" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="60" end1="61" start2="66" end2="95" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="63" end1="66" start2="97" end2="100" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="67" end1="81" start2="101" end2="115" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="82" end1="86" start2="116" end2="120" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="87" end1="91" start2="121" end2="125" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="92" end1="96" start2="126" end2="130" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="97" end1="98" start2="131" end2="132" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="99" end1="103" start2="133" end2="137" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="104" end1="105" start2="138" end2="140" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="133" end1="134" start2="168" end2="168" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="139" end1="139" start2="173" end2="174" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="140" end1="140" start2="175" end2="182" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="142" end1="142" start2="184" end2="200" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="151" end1="153" start2="209" end2="209" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="162" end1="162" start2="218" end2="219" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="164" end1="165" start2="221" end2="222" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="169" end1="169" start2="226" end2="227" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="174" end1="175" start2="232" end2="232" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="180" end1="184" start2="237" end2="239" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="185" end1="185" start2="240" end2="241" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="186" end1="186" start2="242" end2="244" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="187" end1="187" start2="245" end2="246" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="199" end1="199" start2="258" end2="259" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-        <range start1="207" end1="208" start2="267" end2="269" changelist="ab420765-7612-4824-b4c8-bcdce0bb528c" />
-        <range start1="213" end1="214" start2="274" end2="274" changelist="5b06e798-7739-4958-83b3-b5a639d89e62" />
-      </ranges>
-    </file>
-  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2djGldtdKT7Wu4vdfFd014GKRlo" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\WebStorm 2023.3.4\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\WebStorm 2023.3.4\\plugins\\javascript-impl\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -107,6 +58,7 @@
       <option name="presentableId" value="Default" />
       <updated>1710514225962</updated>
       <workItem from="1710514227106" duration="3802000" />
+      <workItem from="1710551339201" duration="1515000" />
     </task>
     <servers />
   </component>
@@ -119,6 +71,17 @@
         <option value="$PROJECT_DIR$/holidayRules.d.ts" />
         <option value="$PROJECT_DIR$/main.d.ts" />
       </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
     </option>
   </component>
 </project>
