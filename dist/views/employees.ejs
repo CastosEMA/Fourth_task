@@ -10,7 +10,7 @@
 <h1>Employee List</h1>
 
 <ul>
-    <% employees.forEach(employee => { %>
+    <% employeesJson.forEach(employee => { %>
         <li><%= `${employee.id} - ${employee.name}: ${employee.remainingHolidays} days remaining holidays` %></li>
     <% }); %>
 </ul>

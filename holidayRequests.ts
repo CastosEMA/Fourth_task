@@ -1,5 +1,5 @@
 type requestStatus = "Pending" | "Approved" | "Rejected";
-    const statusPending:requestStatus = "Pending";
+const statusPending:requestStatus = "Pending";
 const statusApproved:requestStatus = "Approved";
 const statusRejected:requestStatus = "Rejected";
 

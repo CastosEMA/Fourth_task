@@ -7,24 +7,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { HolidayRequests, statusPending, statusApproved, statusRejected } from './holidayRequests.js';
-import { HolidayRules } from './holidayRules.js';
 import { format, areIntervalsOverlapping, isValid, differenceInDays } from 'date-fns';
 import express from 'express';
 import path from 'path';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
+import mysql from 'mysql2/promise';
+import { config } from 'dotenv';
+config();
+const dbUrl = process.env.MONG_DB_URL;
+// const client = new MongoClient(dbUrl);
+// async function get_smthng() {
+//     try {
+//         // Assuming 'client' is already defined and initialized elsewhere in your code
+//         await client.connect();
+//         console.log('Connected successfully to server');
+//
+//         const db = client.db("app");
+//         const collection = db.collection('documents');
+//         const document = { name: "John", age: 30, city: "New York" };
+//
+//         const result = await collection.insertOne(document);
+//         console.log('Found documents:', document);
+//
+//         // Don't forget to close the connection when you're done
+//         await client.close();
+//         console.log('Connection closed successfully');
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const port = 3000;
+const port = Number(process.env.PORT);
 app.use(bodyParser.urlencoded());
+app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log('Request Body:', req.body);
+    next();
+});
 app.listen(port, () => {
     console.log(`Server started at ${port} port`);
 });
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-const employees = [];
+/*const employees: Employee[] = [];
 employees.push({
     id: 1,
     name: "Yura",
@@ -44,18 +73,13 @@ employees.push({
     id: 4,
     name: "Dima",
     remainingHolidays: 13,
-});
-const requests = [];
-requests.push({
-    employeeId: 1,
-    startDate: "2024-04-01",
-    endDate: "2024-04-15",
-    status: statusPending,
-});
-const approvedOrRejectedRequests = [];
-const rules = [];
-const rule = new HolidayRules("2024-03-16", "2024-03-18");
-rules.push(rule);
+});*/
+//const approvedOrRejectedRequests: HolidayRequests[] = [];
+//const employees:Employee[] = [];
+//const requests: HolidayRequests[] = [];
+//const rules: HolidayRules[] = [];
+//const rule = new HolidayRules("2024-03-16", "2024-03-18");
+//rules.push(rule);
 let successMessage;
 let failMessage;
 // function arrayToObject(arr:[]) {
@@ -65,363 +89,354 @@ let failMessage;
 //     }, {});
 // }
 function main() {
-    function fetchHolidays(year, countryCode) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const response = yield axios.get(`https://date.nager.at/api/v3/publicholidays/${year}/${countryCode}`);
-                return response.data;
-            }
-            catch (error) {
-                console.error('An error occurred while executing the request:', error);
-                return [];
-            }
+    return __awaiter(this, void 0, void 0, function* () {
+        // get_smthng()
+        const connection = yield mysql.createConnection({
+            host: '127.0.0.1',
+            port: 3306,
+            user: 'root',
+            password: '',
+            database: 'test'
         });
-    }
-    //const holidaysPromise: Promise<Holiday[]> = fetchHolidays(2024, 'UA');
-    const holidays = [];
-    let relevantHolidays = [];
-    fetchHolidays(2024, 'UA')
-        .then((holidaysData) => {
-        holidays.push(...holidaysData);
-        console.log('Public Holidays List:', holidays);
-    })
-        .catch((error) => {
-        console.error('An error occurred while receiving holidays:', error);
-    });
-    function checkDates(employeeId, startDate, endDate) {
-        try {
-            const periodOfVacation = differenceInDays(endDate, startDate);
-            const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({ start: rules[0].blackoutStartDate, end: rules[0].blackoutEndDate }, { start: startDate, end: endDate });
-            const employee = employees.find((emp) => emp.id === employeeId);
-            if (periodOfVacation > 0 && differenceInDays(startDate, Date()) > 0) {
-                if (employee) {
-                    // @ts-ignore
-                    if (employee.remainingHolidays >= periodOfVacation) {
-                        if (isHolidayOvarlappingWithBlackoutPeriod) {
-                            if (periodOfVacation <= rules[0].maxConsecutiveDays) {
-                                return true;
+        // console.log(connection)
+        // Виконання SQL-запиту для отримання списку таблиць
+        // // Виконання SQL-запиту для отримання списку таблиць
+        //     const [rows, fields] = await connection.execute(
+        //         'SELECT table_name FROM information_schema.tables WHERE table_schema = ?',
+        //         ['test']
+        //     );
+        function get_ids() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const [rows] = yield connection.execute('SELECT id FROM employees');
+                // Повернення масиву з id
+                return rows.map((row) => row.id);
+            });
+        }
+        function fetchHolidays(year, countryCode) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const response = yield axios.get(`https://date.nager.at/api/v3/publicholidays/${year}/${countryCode}`);
+                    return response.data;
+                }
+                catch (error) {
+                    console.error('An error occurred while executing the request:', error);
+                    return [];
+                }
+            });
+        }
+        //const holidaysPromise: Promise<Holiday[]> = fetchHolidays(2024, 'UA');
+        const holidays = [];
+        let relevantHolidays = [];
+        fetchHolidays(2024, 'UA')
+            .then((holidaysData) => {
+            holidays.push(...holidaysData);
+        })
+            .catch((error) => {
+            console.error('An error occurred while receiving holidays:', error);
+        });
+        function checkDates(employeeId, startDate, endDate) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const rules = yield getRulesRows();
+                    const periodOfVacation = differenceInDays(endDate, startDate);
+                    const isHolidayOvarlappingWithBlackoutPeriod = !areIntervalsOverlapping({ start: rules[0].blackoutStartDate, end: rules[0].blackoutEndDate }, { start: startDate, end: endDate });
+                    const employee = yield connection.execute("SELECT * FROM employees WHERE employeeId = ?", [employeeId]);
+                    console.log("check empl" + employee);
+                    if (periodOfVacation > 0 && differenceInDays(startDate, Date()) > 0) {
+                        if (employee) {
+                            // @ts-ignore
+                            if (employee.remainingHolidays >= periodOfVacation) {
+                                if (isHolidayOvarlappingWithBlackoutPeriod) {
+                                    if (periodOfVacation <= rules[0].maxConsecutiveDays) {
+                                        return true;
+                                    }
+                                    else {
+                                        failMessage = "You chose too much days for your holiday!!!";
+                                        return false;
+                                    }
+                                }
+                                else {
+                                    failMessage = "There is a Blackout Period in the dates you chose!!!";
+                                    return false;
+                                }
                             }
                             else {
-                                console.log("You chose too much days for your holiday!!!");
+                                failMessage = "You chose too much days for your holiday!!!";
                                 return false;
                             }
                         }
                         else {
-                            console.log("There is a Blackout Period in the dates you chose!!!");
+                            failMessage = "There is no employee with such id, please enter the correct eployee id!!!";
                             return false;
                         }
                     }
                     else {
-                        console.log("You chose too much days for your holiday!!!");
+                        failMessage = "You chose the wrong period of holiday!!!";
                         return false;
                     }
                 }
-                else {
-                    console.log("There is no employee with such id, please enter the correct eployee id!!!");
+                catch (error) {
+                    failMessage = "The date was entered incorrectly!!!";
                     return false;
                 }
-            }
-            else {
-                console.log("You chose the wrong period of holiday!!!");
-                return false;
-            }
-        }
-        catch (error) {
-            console.log("The date was entered incorrectly");
-            return false;
-        }
-    }
-    function updateRequest(id, startDate, endDate) {
-        console.log(startDate + " " + endDate);
-        console.log(id);
-        console.log(typeof id);
-        console.log(requests[id]);
-        const startDateObj = new Date(startDate);
-        const endDateObj = new Date(endDate);
-        console.log(startDateObj);
-        console.log(endDateObj);
-        if (isValid(startDateObj) && isValid(endDateObj) && requests[id] !== undefined) {
-            const formattedsStartDate = format(startDateObj, 'yyyy-MM-dd');
-            const formattedsEndDate = format(endDateObj, 'yyyy-MM-dd');
-            if (checkDates(requests[id].employeeId, formattedsStartDate, formattedsEndDate)) {
-                requests[id].startDate = formattedsStartDate;
-                requests[id].endDate = formattedsEndDate;
-                requests[id].status = statusPending;
-                console.log(startDateObj + " " + endDateObj);
-                console.log("Перемога");
-                console.log(requests[id]);
-                return requests[id];
-            }
-        }
-    }
-    app.post('/update-request', (req, res) => {
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
-        const id = Number(req.body.idOfRequest);
-        updateRequest(id, startDate, endDate);
-    });
-    app.post('/delete-request', (req, res) => {
-        try {
-        }
-        catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
-        }
-    });
-    app.delete('/delete-request', (req, res) => {
-        try {
-            const requestId = Number(req.query.requestId);
-            const result = req.query.result;
-            if (result) {
-                requests.splice(requestId, 1);
-                console.log(requests);
-            }
-            successMessage = "Holiday request deleted successfully!";
-            res.redirect('/holidays');
-        }
-        catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
-        }
-    });
-    app.get('/update-request', (req, res) => {
-        try {
-            const idOfRequest = Number(req.query.requestId);
-            res.render('update-request', { idOfRequest: idOfRequest });
-        }
-        catch (error) {
-            res.status(500).send(error);
-        }
-    });
-    app.get('/employees', (req, res) => {
-        try {
-            const employeesJson = JSON.stringify(employees);
-            console.log(req);
-            res.render('employees', { employees: JSON.parse(employeesJson) });
-        }
-        catch (e) {
-            res.status(500).send('Internal Server Error');
-        }
-    });
-    app.get('/holidays', (req, res) => {
-        try {
-            relevantHolidays = [];
-            const dates = requests.map(request => {
-                return {
-                    startDate: request.startDate,
-                    endDate: request.endDate
-                };
             });
-            holidays.forEach(holiday => {
-                dates.forEach(date => {
-                    if (areIntervalsOverlapping({ start: new Date(holiday.date), end: new Date(holiday.date) }, { start: new Date(date.startDate), end: new Date(date.endDate) })) {
-                        relevantHolidays.push(holiday);
+        }
+        function getRequestsRows() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const [rows] = yield connection.execute('SELECT * FROM requests');
+                const requestsJson = JSON.parse(JSON.stringify(rows));
+                return requestsJson;
+            });
+        }
+        function getApprovedOrRejectedRequestsRows() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const [rows] = yield connection.execute('SELECT * FROM approvedorrejectedholidays');
+                const requestsJson = JSON.parse(JSON.stringify(rows));
+                return requestsJson;
+            });
+        }
+        function getEmployeeRows() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const [rows] = yield connection.execute('SELECT * FROM  employees');
+                const employeesJson = JSON.parse(JSON.stringify(rows));
+                return employeesJson;
+            });
+        }
+        function getRulesRows() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const [rows] = yield connection.execute('SELECT * FROM rules');
+                const rulesJson = JSON.parse(JSON.stringify(rows));
+                return rulesJson;
+            });
+        }
+        function deleteRequestById(id) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const [result] = yield connection.execute('DELETE FROM requests WHERE id = ?', [id]);
+                }
+                catch (error) {
+                    console.error('Error deleting request:', error);
+                }
+            });
+        }
+        app.post('/delete-request', (req, res) => {
+            try {
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).send('Internal Server Error');
+            }
+        });
+        app.delete('/delete-request', (req, res) => {
+            try {
+                const requestId = Number(req.query.requestId);
+                const result = req.query.result;
+                if (result) {
+                    deleteRequestById(requestId);
+                }
+                successMessage = "Holiday request deleted successfully!";
+                res.redirect('/holidays');
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).send('Internal Server Error');
+            }
+        });
+        function updateRequest(id, startDate, endDate) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+                function checkRequestExists(idOfEmployee) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        try {
+                            const [rows] = yield connection.execute('SELECT * FROM requests WHERE employeeId = ?', [idOfEmployee]);
+                            // Перевіряємо, чи дані були отримані з бази даних та чи масив не є порожнім
+                            if (rows && Array.isArray(rows) && rows.length > 0) {
+                                return true; // Якщо рядки знайдено, повертаємо true
+                            }
+                            else {
+                                return false; // Якщо рядки не знайдено, повертаємо false
+                            }
+                        }
+                        catch (error) {
+                            console.error('Error checking request:', error);
+                            return false; // Повертаємо false в разі помилки
+                        }
+                    });
+                }
+                if (isValid(startDateObj) && isValid(endDateObj) && checkRequestExists(id) !== undefined) {
+                    const formattedsStartDate = format(startDateObj, 'yyyy-MM-dd');
+                    const formattedsEndDate = format(endDateObj, 'yyyy-MM-dd');
+                    try {
+                        console.log("Виконую цю штуку");
+                        console.log(id);
+                        const [rows] = yield connection.execute("SELECT id, employeeId, startDate, endDate, status FROM requests WHERE id = ?", [id]);
+                        console.log("виконав");
+                        console.log("ОСЬО - " + rows);
                     }
-                });
+                    catch (err) {
+                        console.log(err);
+                    }
+                    // if(checkDates(requests[id].employeeId, formattedsStartDate, formattedsEndDate)){
+                    //
+                    //     requests[id].startDate = formattedsStartDate;
+                    //     requests[id].endDate = formattedsEndDate;
+                    //     requests[id].status = statusPending;
+                    //     console.log("Win");
+                    //     return requests[id];
+                    // }
+                }
             });
-            console.log("Relevant Holidays:", relevantHolidays);
-            res.render('holidays', { requests, approvedOrRejectedRequests, successMessage, relevantHolidays });
         }
-        catch (e) {
-            res.status(500).send('Internal Server Error');
-        }
-    });
-    app.post('/approve-reject-holiday', (req, res) => {
-        try {
-            const idOfEmployee = parseInt(req.body.idOfEmployee);
-            const action = req.body.action;
-            const requestId = parseInt(req.body.requestId);
-            const request = requests.find((r) => r.employeeId === idOfEmployee);
-            if (request) {
-                if (action === 'approve') {
-                    request.status = statusApproved;
-                    const holidayLength = differenceInDays(request.endDate, request.startDate);
-                    employees[request.employeeId - 1].remainingHolidays = employees[request.employeeId - 1].remainingHolidays - holidayLength;
-                    approvedOrRejectedRequests.push(request);
-                    requests.splice(requestId, 1);
-                    successMessage = 'Holiday request approved successfully!';
+        app.post('/update-request', (req, res) => {
+            const startDate = req.body.startDate;
+            const endDate = req.body.endDate;
+            const id = Number(req.body.idOfRequest);
+            console.log(id);
+            updateRequest(id, startDate, endDate);
+            res.redirect('/holidays');
+        });
+        app.get('/update-request', (req, res) => {
+            try {
+                const idOfRequest = Number(req.query.requestId);
+                res.render('update-request', { idOfRequest: idOfRequest });
+            }
+            catch (error) {
+                res.status(500).send(error);
+            }
+        });
+        app.get('/employees', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const employeesJson = yield getEmployeeRows();
+                res.render('employees', { employeesJson });
+            }
+            catch (e) {
+                res.status(500).send('Internal Server Error');
+            }
+        }));
+        app.get('/holidays', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const requestsJson = yield getRequestsRows();
+                const approvedOrRejectedRequests = yield getApprovedOrRejectedRequestsRows();
+                relevantHolidays = [];
+                const dates = requestsJson.map(request => {
+                    return {
+                        startDate: request.startDate,
+                        endDate: request.endDate
+                    };
+                });
+                holidays.forEach(holiday => {
+                    dates.forEach(date => {
+                        if (areIntervalsOverlapping({ start: new Date(holiday.date), end: new Date(holiday.date) }, { start: new Date(date.startDate), end: new Date(date.endDate) })) {
+                            relevantHolidays.push(holiday);
+                        }
+                    });
+                });
+                res.render('holidays', { requestsJson, approvedOrRejectedRequests, successMessage, relevantHolidays });
+            }
+            catch (error) {
+                console.error('Error fetching requests:', error);
+                res.status(500).send('Internal Server Error');
+            }
+        }));
+        app.post('/approve-reject-holiday', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                try {
+                    const idOfEmployee = parseInt(req.body.idOfEmployee);
+                    const action = req.body.action;
+                    const requestId = parseInt(req.body.requestId);
+                    const request = yield connection.execute('SELECT * FROM requests WHERE id = ?', [requestId]);
+                    const [employeeRemainingHolidays] = yield connection.execute('SELECT remainingHolidays FROM employees WHERE id = ?', [idOfEmployee]);
+                    const employeeRemainingHoliday = JSON.parse(JSON.stringify(employeeRemainingHolidays));
+                    const remainingHolidays = employeeRemainingHoliday[0].remainingHolidays;
+                    const [requestDates] = yield connection.execute('SELECT startDate, endDate FROM requests WHERE id = ?', [requestId]);
+                    const requestBouthDates = JSON.parse(JSON.stringify(requestDates));
+                    const startDate = requestBouthDates[0].startDate;
+                    const endDate = requestBouthDates[0].endDate;
+                    const holidayLength = differenceInDays(endDate, startDate);
+                    const leftHolidays = remainingHolidays - holidayLength;
+                    if (request) {
+                        if (action === 'approve') {
+                            yield connection.execute('UPDATE requests SET status = ? WHERE id = ?', ['Approved', requestId]);
+                            yield connection.execute('UPDATE employees SET remainingHolidays = ? WHERE id = ?', [leftHolidays, idOfEmployee]);
+                            const [changedRequest] = yield connection.execute('SELECT * FROM requests WHERE id = ?', [requestId]);
+                            const changedParsedRequest = JSON.parse(JSON.stringify(changedRequest));
+                            const statusOfChangedRequest = changedParsedRequest[0].status;
+                            const sql = 'INSERT INTO approvedorrejectedholidays (employeeId, startDate, endDate, status) VALUES (?, ?, ?, ?)';
+                            try {
+                                const [result] = yield connection.execute(sql, [idOfEmployee, startDate, endDate, statusOfChangedRequest]);
+                                console.log('Request added successfully:', result);
+                            }
+                            catch (error) {
+                                console.error('Error adding request:', error);
+                            }
+                            yield deleteRequestById(requestId);
+                            successMessage = 'Holiday request approved successfully!';
+                        }
+                        else if (action === 'reject') {
+                            yield connection.execute('UPDATE requests SET status = ? WHERE id = ?', ['Rejected', requestId]);
+                            const [changedRequest] = yield connection.execute('SELECT * FROM requests WHERE id = ?', [requestId]);
+                            const changedParsedRequest = JSON.parse(JSON.stringify(changedRequest));
+                            const statusOfChangedRequest = changedParsedRequest[0].status;
+                            const sql = 'INSERT INTO approvedorrejectedholidays (employeeId, startDate, endDate, status) VALUES (?, ?, ?, ?)';
+                            try {
+                                const [result] = yield connection.execute(sql, [idOfEmployee, startDate, endDate, statusOfChangedRequest]);
+                                console.log('Request added successfully:', result);
+                            }
+                            catch (error) {
+                                console.error('Error adding request:', error);
+                            }
+                            yield deleteRequestById(requestId);
+                            successMessage = 'Holiday request rejected successfully!';
+                        }
+                        else if (action === 'update') {
+                            res.redirect(`/update-request?requestId=${requestId}`);
+                        }
+                        res.redirect('/holidays');
+                    }
+                    else {
+                        res.status(404).send('Request not found');
+                    }
                 }
-                else if (action === 'reject') {
-                    approvedOrRejectedRequests.push(request);
-                    requests.splice(requestId, 1);
-                    request.status = statusRejected;
-                    successMessage = 'Holiday request rejected successfully!';
+                catch (error) {
+                    console.error(error);
+                    res.status(500).send('Internal Server Error');
                 }
-                else if (action === 'update') {
-                    res.redirect(`/update-request?requestId=${requestId}`);
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).send('Internal Server Error');
+            }
+        }));
+        app.get('/add-holiday', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const employeesJson = yield getEmployeeRows();
+                res.render('add-holiday', { failMessage, holidays, employeesJson });
+            }
+            catch (error) {
+                res.status(500).send(error);
+            }
+        }));
+        app.post("/add-holiday", (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const employeeId = parseInt(req.body.employeeId);
+            const startDate = req.body.startDate;
+            const endDate = req.body.endDate;
+            if (yield checkDates(employeeId, startDate, endDate)) {
+                const sql = 'INSERT INTO requests (employeeId, startDate, endDate) VALUES (?, ?, ?)';
+                try {
+                    const [result] = yield connection.execute(sql, [employeeId, startDate, endDate]);
+                    console.log('Request added successfully:', result);
                 }
+                catch (error) {
+                    console.error('Error adding request:', error);
+                }
+                successMessage = "Holiday request created successfully!";
                 res.redirect('/holidays');
             }
             else {
-                res.status(404).send('Request not found');
+                res.redirect('/add-holiday');
             }
-        }
-        catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
-        }
-    });
-    app.post("/add-holiday", (req, res) => {
-        const employeeId = parseInt(req.body.employeeId);
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
-        if (checkDates(employeeId, startDate, endDate) == true) {
-            requests.push(new HolidayRequests(employeeId, startDate, endDate));
-            successMessage = "Holiday request created successfully!";
-            res.redirect('/holidays');
-        }
-        else {
-            res.redirect('/add-holiday');
-        }
-    });
-    app.get('/add-holiday', (req, res) => {
-        try {
-            res.render('add-holiday', { failMessage, holidays });
-        }
-        catch (error) {
-            res.status(500).send(error);
-        }
+        }));
     });
 }
-/*async function addEmployee() {
-    const { id, name, remainingHolidays } = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'id',
-            message: 'Enter the id of the new empoyee',
-        },
-        {
-            type: 'input',
-            name: 'name',
-            message: 'Enter the name of the new employee:',
-        },
-        {
-            type: 'number',
-            name: 'remainingHolidays',
-            message: 'Enter the remaining holidays for the new employee:',
-        },
-    ]);
-
-    employees.push(new Employee(id, name, remainingHolidays));
-    console.log('New employee added successfully!');
-}
-
-// View of the list of added Employees
-function viewEmployees() {
-    console.log('List of employees:');
-    employees.forEach( (emp) => {
-        console.log(`${emp.id} ${emp.name}: ${emp.remainingHolidays} days remaining holidays`);
-    });
-}
-
-//Submit Holiday Request
-async function submitHolidayRequest() {
-    const { employeeId, startDate, endDate, status } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'employeeId',
-            message: 'Choose the employee:',
-            choices: employees.map((employee) => employee.id),
-        },
-        {
-            type: 'input',
-            name: 'startDate',
-            message: 'Enter the start date of the holiday (YYYY-MM-DD):',
-        },
-        {
-            type: 'input',
-            name: 'endDate',
-            message: 'Enter the end date of the holiday (YYYY-MM-DD):',
-        },
-    ]);
-    function parseDate(input: string): Date {
-        const parts = input.split('-');
-        return new Date(+parts[0], +parts[1], +parts[2]);
-    }
-
-    // Check Blackout period function
-    if(areIntervalsOverlapping({start:rules[0].blackoutStartDate,end:rules[0].blackoutEndDate},{start:startDate,end:endDate})){
-        console.log("The requested holiday period falls within the blackout period.");
-        return;
-    }else{
-        console.log("The requested holiday period is outside the blackout period.");
-
-    }
-
-    const daysRequested = differenceInDays(
-        parseDate(endDate),
-        parseDate(startDate)
-    )
-
-    // Check Max Consecutive days function
-    if (daysRequested > rules[0].maxConsecutiveDays //|| daysRequested > employees[employeeId].remainingHolidays) {
-        console.log(`Request exceeds the maximum consecutive holiday limit of ${rules[0].maxConsecutiveDays} days.`);
-        return;
-    }
-    const employee = employees.find((emp) => emp.id === employeeId);
-    if (employee) {
-        if(daysRequested > employee.remainingHolidays){
-            console.log('This employee does not have this much holidays!');
-        }else{
-            requests.push( new HolidayRequests (employeeId, startDate, endDate, status));
-            console.log('Holiday request submitted successfully!');
-        }
-    } else {
-        console.log('Employee not found!');
-    }
-}
-
-// View Pending Holiday Requests
-function viewPendingHolidayRequests() {
-    console.log('List of pending holiday requests:');
-    requests.filter((request) => request.status === 'Pending').forEach((request) => {
-        console.log(`${request.employeeId}: Start date ${request.startDate} to End date ${request.endDate} - ${request.status}`);
-    });
-}
-
-//Approving or Reject Request
-async function approveRejectHolidayRequest() {
-
-    const pendingRequests = requests.filter((request) => request.status === 'Pending');
-
-    if (pendingRequests.length === 0) {
-        console.log('No pending holiday requests.');
-        return;
-    }
-
-    const { requestToProcess } = await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'requestToProcess',
-            message: 'Choose a pending holiday request to approve or reject:',
-            choices: pendingRequests.map((request) => `${request.employeeId}: Start date ${request.startDate} - End date ${request.endDate}`),
-        },
-    ]);
-
-    const selectedRequest = pendingRequests.find(
-        (request) =>
-            `${request.employeeId}: Start date ${request.startDate} - End date ${request.endDate}` === requestToProcess
-    );
-
-    if (selectedRequest) {
-        const { approve } = await inquirer.prompt([
-            {
-                type: 'confirm',
-                name: 'approve',
-                message: 'Do you want to approve this holiday request?',
-                default: true,
-            },
-        ]);
-
-        if (approve) {
-            selectedRequest.status = 'Approved';
-            console.log('Holiday request approved!');
-        } else {
-            selectedRequest.status = 'Rejected';
-            console.log('Holiday request rejected!');
-        }
-    }
-
-}
-*/
 main();

@@ -11,19 +11,19 @@
 <h1>Holiday Requests</h1>
 
 <ul id="requestsList">
-    <% requests.forEach(request => { %>
+    <% requestsJson.forEach(request => { %>
         <li>
             <%= `${request.employeeId}: Start date ${request.startDate} to End date ${request.endDate} - ${request.status}` %>
             <form action="/approve-reject-holiday" method="post">
                 <input type="hidden" name="idOfEmployee" value="<%= request.employeeId %>">
-                <input type="hidden" name="requestId" value="<%= requests.indexOf(request) %>">
+                <input type="hidden" name="requestId" value="<%= request.id %>">
                 <button type="submit" name="action" value="approve">Approve</button>
                 <button type="submit" name="action" value="reject">Reject</button>
                 <button type="submit" name="action" value="update">Update</button>
             </form>
             <form action="/delete-request" method="post">
-                <input type="hidden" name="requestId" value="<%= requests.indexOf(request) %>">
-                <button type="submit" onclick="deleteRequest('<%= requests.indexOf(request)%>')">Delete</button>
+                <input type="hidden" name="requestId" value="<%= requestsJson.indexOf(request) %>">
+                <button type="submit" onclick="deleteRequest('<%= request.id%>')">Delete</button>
             </form>
         </li>
     <% }); %>
